@@ -39,10 +39,56 @@ export default function Home() {
     j.title.toLowerCase().includes(buscaDebounced.toLowerCase())
   );
 
+  const shooters = filtrados.filter(
+   (jogo) => jogo.genre === "Shooter"
+  );
+
+  const mmorpg = filtrados.filter(
+   (jogo) => jogo.genre === "MMORPG"
+  );
+
+  const strategy = filtrados.filter(
+   (jogo) => jogo.genre === "Strategy"
+  );
+
+  const racing = filtrados.filter(
+   (jogo) => jogo.genre === "Racing"
+  );
+
+  const renderCard = (jogo) => (
+    <div key={jogo.id} className="card">
+      <Link to={`/game/${jogo.id}`}>
+        <img src={jogo.thumbnail} alt={jogo.title} />
+         <h3>{jogo.title}</h3>
+      </Link>
+
+      <button
+        className={
+          favoritos.find((f) => f.id === jogo.id)
+            ? "favorite"
+            : ""
+        }
+        onClick={() => toggleFavorito(jogo)}>
+        {favoritos.find((f) => f.id === jogo.id)
+          ? "❤️ Favorito"
+          : "🤍 Favoritar"
+        }
+      </button>
+    </div>
+  );
+
   return (
     <div className="container">
       <header className="header">
-        <Link to="/" className="logo">🎮 Game Finder</Link>
+        <Link to="/" className="logo">
+         🎮 Game Finder
+        </Link>
+
+       <div className="header-actions">
+          <span className="favorites-counter">
+           ❤️ {favoritos.length}
+          </span>
+        </div>
       </header>
 
       <input
@@ -57,23 +103,39 @@ export default function Home() {
           <div key={i} className="skeleton"></div>
         ))}
       </div>}
+      
+      <section className="category">
+        <h2>🔥 Shooters</h2>
 
-      <div className="grid">
-        {filtrados.map((jogo) => (
-          <div key={jogo.id} className="card">
-            <Link to={`/game/${jogo.id}`}>
-              <img src={jogo.thumbnail} />
-              <h3>{jogo.title}</h3>
-            </Link>
+        <div className="grid">
+          {shooters.slice(0, 8).map(renderCard)}
+        </div>
+      </section>
 
-             <button
-              className={favoritos.find(f => f.id === jogo.id) ? "favorite" : ""}
-              onClick={() => toggleFavorito(jogo)}>
-              {favoritos.find(f => f.id === jogo.id) ? "❤️ Favorito" : "🤍 Favoritar"}
-             </button>
-          </div>
-        ))}
-      </div>
+      <section className="category">
+       <h2>⚔️ MMORPG</h2>
+
+        <div className="grid">
+          {mmorpg.slice(0, 8).map(renderCard)}
+        </div>
+      </section>
+
+      <section className="category">
+        <h2>🧠 Strategy</h2>
+
+        <div className="grid">
+          {strategy.slice(0, 8).map(renderCard)}
+        </div>
+      </section>
+
+      <section className="category">
+        <h2>🏎️ Racing</h2>
+
+        <div className="grid">
+          {racing.slice(0, 8).map(renderCard)}
+        </div>
+      </section>
+      
     </div>
   );
 }
