@@ -79,11 +79,9 @@ body {
   
 /* ROW  */
 .grid {
-    display: flex;
-    gap: 16px;
-    overflow-x: auto;
-    padding: 20px;
-    scroll-snap-type: x mandatory;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
 }
   
 .grid::-webkit-scrollbar {
@@ -93,26 +91,24 @@ body {
 
 /* CARD  */
 .card {
-    min-width: 220px;
-    background: #141422;
-    border-radius: 14px;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    position: relative;
-    scroll-snap-align: start;
+  overflow: hidden;
+  border-radius: 18px;
+
+  background: #111827;
+
+  transition: 0.25s;
 }
-  
+
 .card:hover {
-    transform: scale(1.08);
-    box-shadow: 0 10px 30px rgba(56, 175, 190, 0.3);
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0,0,0,.4);
 }
-  
-  /* IMAGEM */
-  .card img {
-    width: 100%;
-    height: 130px;
-    object-fit: cover;
-  }
+
+.card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
   
   /* TITULO */
   .card h3 {
@@ -121,23 +117,26 @@ body {
   }
   
   /* BOTÃO FAVORITO  */
-  .card button {
-    width: 100%;
-    border: none;
-    padding: 10px;
-    background: #fbb402f7;
-    color: white;
-    cursor: pointer;
-    transition: 0.3s;
-  }
-  
-  .card button:hover {
-    background: #fb8302;
-  }
+.card button {
+  width: 100%;
+  border: none;
+  padding: 12px;
+
+  background: #151924;
+  color: white;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.card button:hover {
+  background: #38afbe;
+}
   
   /* FAVORITO ativo */
   .favorite {
-    background: #fbb402f7 !important;
+    background: #38afbe !important;
   }
   
   /* LOADING SKELETON */
