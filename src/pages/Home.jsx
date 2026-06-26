@@ -60,7 +60,7 @@ export default function Home() {
       <Link to={`/game/${jogo.id}`}>
         <img src={jogo.thumbnail} alt={jogo.title} />
          <h3>{jogo.title}</h3>
-         <p>{jogo.genre}</p>
+         {/*<p>{jogo.genre}</p>*/}
       </Link>
 
       <button
