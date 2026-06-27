@@ -1,142 +1,196 @@
 import { useEffect, useState } from "react";
-import { getJogos } from "../services/api";
+import { buscarJogos } from "../services/api";
 import { useDebounce } from "../hooks/useDebounce";
 import { Link } from "react-router-dom";
 
 export default function Home() {
   const [jogos, setJogos] = useState([]);
   const [busca, setBusca] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [erro, setErro] = useState("");
+
   const [favoritos, setFavoritos] = useState(
     JSON.parse(localStorage.getItem("favoritos")) || []
   );
-  const [loading, setLoading] = useState(true);
 
-  const buscaDebounced = useDebounce(busca, 300);
+  const buscaDebounced = useDebounce(busca, 500);
 
   useEffect(() => {
-    async function load() {
-      const data = await getJogos();
-      setJogos(data);
-      setLoading(false);
+    async function carregarJogos() {
+      try {
+        setLoading(true);
+        setErro("");
+
+        const dados = await buscarJogos(buscaDebounced);
+
+        setJogos(dados);
+
+        if (
+          dados.length === 0 &&
+          buscaDebounced.trim() !== ""
+        ) {
+          setErro(
+            `Nenhum jogo encontrado para "${buscaDebounced}"`
+          );
+        }
+      } catch (error) {
+        console.error(error);
+        setErro("Erro ao buscar jogos.");
+      } finally {
+        setLoading(false);
+      }
     }
-    load();
-  }, []);
+
+    carregarJogos();
+  }, [buscaDebounced]);
 
   const toggleFavorito = (jogo) => {
     let updated;
 
     if (favoritos.find((f) => f.id === jogo.id)) {
-      updated = favoritos.filter((f) => f.id !== jogo.id);
+      updated = favoritos.filter(
+        (f) => f.id !== jogo.id
+      );
     } else {
       updated = [...favoritos, jogo];
     }
 
     setFavoritos(updated);
-    localStorage.setItem("favoritos", JSON.stringify(updated));
+
+    localStorage.setItem(
+      "favoritos",
+      JSON.stringify(updated)
+    );
   };
 
-  const filtrados = jogos.filter((j) =>
-    j.title.toLowerCase().includes(buscaDebounced.toLowerCase())
-  );
-
-  const shooters = filtrados.filter(
-   (jogo) => jogo.genre === "Shooter"
-  );
-
-  const mmorpg = filtrados.filter(
-   (jogo) => jogo.genre === "MMORPG"
-  );
-
-  const strategy = filtrados.filter(
-   (jogo) => jogo.genre === "Strategy"
-  );
-
-  const racing = filtrados.filter(
-   (jogo) => jogo.genre === "Racing"
-  );
+  const isFavorito = (id) => {
+    return favoritos.some(
+      (f) => f.id === id
+    );
+  };
 
   const renderCard = (jogo) => (
-    <div key={jogo.id} className="card">
-      <Link to={`/game/${jogo.id}`}>
-        <img src={jogo.thumbnail} alt={jogo.title} />
-         <h3>{jogo.title}</h3>
-         {/*<p>{jogo.genre}</p>*/}
-      </Link>
-
+    <div
+      key={jogo.id}
+      className="card"
+    >
       <button
-        className={
-          favoritos.find((f) => f.id === jogo.id)
-            ? "favorite"
+        className={`favorite-btn ${
+          isFavorito(jogo.id)
+            ? "active"
             : ""
+        }`}
+        onClick={() =>
+          toggleFavorito(jogo)
         }
-        onClick={() => toggleFavorito(jogo)}>
-        {favoritos.find((f) => f.id === jogo.id)
-          ? "❤️ Favorito"
-          : "🤍 Favoritar"
-        }
+      >
+        {isFavorito(jogo.id)
+          ? "❤️"
+          : "🤍"}
       </button>
+
+      <Link
+        to={`/game/${jogo.id}`}
+        className="card-link"
+      >
+        <img
+          src={jogo.background_image}
+          alt={jogo.name}
+        />
+
+        <div className="card-content">
+          <h3>{jogo.name}</h3>
+
+          <div className="game-info">
+            <span>
+              ⭐ {jogo.rating}
+            </span>
+
+            <span>
+              📅 {jogo.released}
+            </span>
+          </div>
+
+          <div className="genres">
+            {jogo.genres
+              ?.slice(0, 2)
+              .map((genre) => (
+                <span
+                  key={genre.id}
+                  className="genre-tag"
+                >
+                  {genre.name}
+                </span>
+              ))}
+          </div>
+        </div>
+      </Link>
     </div>
   );
 
   return (
     <div className="container">
       <header className="header">
-        <Link to="/" className="logo">
-         🎮 Game Finder
+        <Link
+          to="/"
+          className="logo"
+        >
+          🎮 Game Finder
         </Link>
 
-       <div className="header-actions">
-          <span className="favorites-counter">
-           ❤️ {favoritos.length}
-          </span>
+        <div className="header-actions">
+          <div className="favorites-counter">
+            ❤️ {favoritos.length}
+          </div>
         </div>
       </header>
 
-      <input
-        className="search"
-        placeholder="Buscar jogos..."
-        value={busca}
-        onChange={(e) => setBusca(e.target.value)}
-      />
+      <div className="search-container">
+        <input
+          className="search"
+          placeholder="Buscar jogos..."
+          value={busca}
+          onChange={(e) =>
+            setBusca(e.target.value)
+          }
+        />
+      </div>
 
-      {loading && <div className="grid">
-        {[1,2,3,4,5,6].map(i => (
-          <div key={i} className="skeleton"></div>
-        ))}
-      </div>}
-      
-      <section className="category">
-        <h2>🔥 Shooters</h2>
-
-        <div className="grid">
-          {shooters.slice(0, 8).map(renderCard)}
+      {erro && (
+        <div className="erro">
+          {erro}
         </div>
-      </section>
+      )}
 
-      <section className="category">
-       <h2>⚔️ MMORPG</h2>
-
+      {loading && (
         <div className="grid">
-          {mmorpg.slice(0, 8).map(renderCard)}
+          {[1, 2, 3, 4, 5, 6].map(
+            (i) => (
+              <div
+                key={i}
+                className="skeleton"
+              ></div>
+            )
+          )}
         </div>
-      </section>
+      )}
 
-      <section className="category">
-        <h2>🧠 Strategy</h2>
+      {!loading &&
+        jogos.length > 0 && (
+          <>
+            <div className="results-header">
+              <h2>
+                {busca
+                  ? `Resultados (${jogos.length})`
+                  : "Jogos Populares"}
+              </h2>
+            </div>
 
-        <div className="grid">
-          {strategy.slice(0, 8).map(renderCard)}
-        </div>
-      </section>
-
-      <section className="category">
-        <h2>🏎️ Racing</h2>
-
-        <div className="grid">
-          {racing.slice(0, 8).map(renderCard)}
-        </div>
-      </section>
-      
+            <div className="grid">
+              {jogos.map(renderCard)}
+            </div>
+          </>
+        )}
     </div>
   );
 }
