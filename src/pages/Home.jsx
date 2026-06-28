@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { buscarJogos } from "../services/api";
-import { useDebounce } from "../hooks/useDebounce";
 import { Link } from "react-router-dom";
 
 export default function Home() {
@@ -8,189 +7,194 @@ export default function Home() {
   const [busca, setBusca] = useState("");
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState("");
+  const [categoria, setCategoria] = useState("Todos");
 
   const [favoritos, setFavoritos] = useState(
     JSON.parse(localStorage.getItem("favoritos")) || []
   );
 
-  const buscaDebounced = useDebounce(busca, 500);
-
   useEffect(() => {
-    async function carregarJogos() {
-      try {
-        setLoading(true);
-        setErro("");
-
-        const dados = await buscarJogos(buscaDebounced);
-
-        setJogos(dados);
-
-        if (
-          dados.length === 0 &&
-          buscaDebounced.trim() !== ""
-        ) {
-          setErro(
-            `Nenhum jogo encontrado para "${buscaDebounced}"`
-          );
-        }
-      } catch (error) {
-        console.error(error);
-        setErro("Erro ao buscar jogos.");
-      } finally {
-        setLoading(false);
-      }
-    }
-
     carregarJogos();
-  }, [buscaDebounced]);
+  }, []);
 
-  const toggleFavorito = (jogo) => {
-    let updated;
+  async function carregarJogos() {
+    try {
+      setLoading(true);
+      setErro("");
 
-    if (favoritos.find((f) => f.id === jogo.id)) {
-      updated = favoritos.filter(
-        (f) => f.id !== jogo.id
-      );
-    } else {
-      updated = [...favoritos, jogo];
+      const dados = await buscarJogos();
+      setJogos(dados);
+
+    } catch (err) {
+      setErro("Erro ao carregar jogos.");
+    } finally {
+      setLoading(false);
     }
+  }
 
-    setFavoritos(updated);
+  async function handleBuscar(e) {
+    e.preventDefault();
 
-    localStorage.setItem(
-      "favoritos",
-      JSON.stringify(updated)
-    );
-  };
+    try {
+      setLoading(true);
+      setErro("");
 
-  const isFavorito = (id) => {
-    return favoritos.some(
-      (f) => f.id === id
-    );
-  };
+      const dados = await buscarJogos(busca);
+      setJogos(dados);
 
-  const renderCard = (jogo) => (
-    <div
-      key={jogo.id}
-      className="card"
-    >
-      <button
-        className={`favorite-btn ${
-          isFavorito(jogo.id)
-            ? "active"
-            : ""
-        }`}
-        onClick={() =>
-          toggleFavorito(jogo)
-        }
-      >
-        {isFavorito(jogo.id)
-          ? "❤️"
-          : "🤍"}
-      </button>
+    } catch (err) {
+      setErro("Erro ao buscar jogos.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
-      <Link
-        to={`/game/${jogo.id}`}
-        className="card-link"
-      >
-        <img
-          src={jogo.background_image}
-          alt={jogo.name}
-        />
+  function toggleFavorito(jogo) {
+    const existe = favoritos.some(f => f.id === jogo.id);
 
-        <div className="card-content">
-          <h3>{jogo.name}</h3>
+    const novos = existe
+      ? favoritos.filter(f => f.id !== jogo.id)
+      : [...favoritos, jogo];
 
-          <div className="game-info">
-            <span>
-              ⭐ {jogo.rating}
-            </span>
+    setFavoritos(novos);
+    localStorage.setItem("favoritos", JSON.stringify(novos));
+  }
 
-            <span>
-              📅 {jogo.released}
-            </span>
-          </div>
+  function isFavorito(id) {
+    return favoritos.some(f => f.id === id);
+  }
 
-          <div className="genres">
-            {jogo.genres
-              ?.slice(0, 2)
-              .map((genre) => (
-                <span
-                  key={genre.id}
-                  className="genre-tag"
-                >
-                  {genre.name}
-                </span>
-              ))}
-          </div>
-        </div>
-      </Link>
-    </div>
-  );
+  const categorias = [
+    "Todos",
+    "Action",
+    "RPG",
+    "Shooter",
+    "Indie",
+    "Adventure",
+    "Strategy",
+    "Racing"
+  ];
+
+  const jogosFiltrados = jogos.filter(jogo => {
+    const matchCategoria =
+      categoria === "Todos"
+        ? true
+        : jogo.genres?.some(g => g.name === categoria);
+
+    return matchCategoria;
+  });
 
   return (
     <div className="container">
+
+      
       <header className="header">
-        <Link
-          to="/"
-          className="logo"
-        >
-          🎮 Game Finder
+        <Link to="/Home" className="logo">
+           Game Finder
         </Link>
 
-        <div className="header-actions">
-          <div className="favorites-counter">
-            ❤️ {favoritos.length}
-          </div>
-        </div>
+        <Link to="/Favoritos" className="favorites-counter">
+            ❤️ Favoritos 
+        </Link>
       </header>
 
-      <div className="search-container">
-        <input
-          className="search"
-          placeholder="Buscar jogos..."
-          value={busca}
-          onChange={(e) =>
-            setBusca(e.target.value)
-          }
-        />
+      
+      <section className="hero">
+        <img src="/hero.png" alt="banner" className="hero-img" />
+
+        <div className="hero-overlay">
+         <form className="search-container" onSubmit={handleBuscar}>
+            <input
+              className="search"
+              placeholder="Buscar jogos..."
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+            />
+
+              <button className="search-btn">🔍 Buscar</button>
+          </form>
+        </div>
+      </section>
+
+      
+      <div className="categories">
+        {categorias.map(cat => (
+          <button
+            key={cat}
+            onClick={() => setCategoria(cat)}
+            className={categoria === cat ? "active" : ""}
+          >
+            {cat}
+          </button>
+        ))}
       </div>
 
-      {erro && (
-        <div className="erro">
-          {erro}
-        </div>
-      )}
+      
+      {erro && <div className="erro">{erro}</div>}
 
+      {/* LOADING */}
       {loading && (
         <div className="grid">
-          {[1, 2, 3, 4, 5, 6].map(
-            (i) => (
-              <div
-                key={i}
-                className="skeleton"
-              ></div>
-            )
-          )}
+          {[1,2,3,4,5,6].map(i => (
+            <div key={i} className="skeleton"></div>
+          ))}
         </div>
       )}
 
-      {!loading &&
-        jogos.length > 0 && (
-          <>
-            <div className="results-header">
-              <h2>
-                {busca
-                  ? `Resultados (${jogos.length})`
-                  : "Jogos Populares"}
-              </h2>
-            </div>
+      
+      {!loading && (
+        <>
+          <div className="section-title">
+            <h2>🔥 Jogos</h2>
+            <span>{jogosFiltrados.length} encontrados</span>
+          </div>
 
-            <div className="grid">
-              {jogos.map(renderCard)}
-            </div>
-          </>
-        )}
+          <div className="grid">
+            {jogosFiltrados.map(jogo => (
+              <div key={jogo.id} className="card">
+
+                {/* FAVORITO RESTAURADO */}
+                <button
+                  className={`favorite-btn ${isFavorito(jogo.id) ? "active" : ""}`}
+                  onClick={() => toggleFavorito(jogo)}
+                >
+                  {isFavorito(jogo.id) ? "❤️" : "🤍"}
+                </button>
+
+                <Link to={`/game/${jogo.id}`} className="card-link">
+
+                  <img src={jogo.background_image} alt={jogo.name} />
+
+                  <div className="card-content">
+                    <h3>{jogo.name}</h3>
+
+                    <div className="game-info">
+                      <span>⭐ {jogo.rating}</span>
+                      <span>📅 {jogo.released}</span>
+                    </div>
+
+                    <div className="genres">
+                      {jogo.genres?.slice(0,2).map(g => (
+                        <span key={g.id} className="genre-tag">
+                          {g.name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                </Link>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      
+      <footer className="footer">
+        <p>© 2026 Game Finder — Desenvolvido por Gabriel Wazny</p>
+        <p>Projeto criado para fins de estudo utilizando React + RAWG API.</p>
+      </footer>
+
     </div>
   );
 }

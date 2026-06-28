@@ -7,8 +7,8 @@ export async function buscarJogos(
   const url = busca
     ? `https://api.rawg.io/api/games?key=${API_KEY}&search=${encodeURIComponent(
         busca
-      )}&page_size=20`
-    : `https://api.rawg.io/api/games?key=${API_KEY}&ordering=-rating&page_size=20`;
+      )}&page_size=40`
+    : `https://api.rawg.io/api/games?key=${API_KEY}&ordering=-rating&page_size=40`;
 
   const response = await fetch(url);
 
