@@ -1,10 +1,14 @@
 ## Buscador de Jogos (React + Vite) ##
 
-Aplicativo web desenvolvido em React para descobrir, buscar e favoritar jogos usando a API da RAWG.
-O projeto simula uma experiência estilo Steam, com interface moderna, responsiva e foco em UX.
+Aplicação web desenvolvida com React + Vite para descobrir, pesquisar e favoritar jogos utilizando a API da RAWG.
+
+O projeto oferece uma experiência inspirada em plataformas como Steam e Epic Games, com interface moderna, responsiva e foco na experiência do usuário.
 
 
-Demonstração
+Demonstração: 
+
+online: gamefinderproject.vercel.app
+
  * Página inicial com jogos populares
  * Busca de jogos em tempo real
  * Sistema de favoritos (localStorage)
@@ -12,10 +16,11 @@ Demonstração
  * Interface responsiva (desktop e mobile)
 
 Tecnologias utilizadas
- * React.js
+ * React
  * React Router DOM
+ * Vite
  * JavaScript (ES6+)
- * CSS puro (customizado)
+ * CSS 
  * LocalStorage 
  * RAWG API (dados dos jogos)
 
@@ -51,8 +56,10 @@ git clone https://github.com/gabiru421/game-finder.git
 Caso necessário crie o arquivo .env (coloque sua API KEY do site RAWG)
 VITE_RAWG_API_KEY=sua_api_aqui
 
-*=*=*=*=*=*=*=*=*=*
+*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 
 Este projeto usa a API pública da RAWG:
 
 https://rawg.io/apidocs
+
+Desenvolvido por Gabriel Wazny como parte da aula de desinvolvimento de sistemas
