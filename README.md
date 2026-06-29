@@ -7,7 +7,7 @@ O projeto oferece uma experiência inspirada em plataformas como Steam e Epic Ga
 
 Demonstração: 
 
-online: gamefinderproject.vercel.app
+Online: gamefinderproject.vercel.app
 
  * Página inicial com jogos populares
  * Busca de jogos em tempo real
