@@ -80,10 +80,7 @@ export default function Detalhes() {
     <div className="container">
 
       <header className="header">
-        <Link
-          to="/"
-          className="logo"
-        >
+        <Link to="/" className="logo">
            Game Finder
         </Link>
 

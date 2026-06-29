@@ -24,18 +24,33 @@ export default function Favoritos() {
       </header>
 
       
-      <section className="favorites-hero">
+        <section className="favorites-hero">
 
-        <div>
-          <h1>❤️ Sua Biblioteca</h1>
-          <p>
-            Todos os jogos que você marcou como favoritos aparecem aqui.
-          </p>
-        </div>
+          <div className="favorites-overlay">
 
-        
+            <span className="favorites-badge">
+              ❤️ Biblioteca Pessoal
+            </span>
 
-      </section>
+            <h1>
+              Seus Jogos Favoritos
+            </h1>
+
+            <p>
+              Todos os jogos que você marcou como favoritos ficam
+              salvos aqui para acesso rápido.
+            </p>
+
+            <div className="favorites-stats">
+              <div className="stat-box">
+                <strong>{favoritos.length}</strong>
+                <span>Jogos Salvos</span>
+              </div>
+            </div>
+
+          </div>  
+
+        </section>
 
       
       {favoritos.length === 0 ? (
@@ -58,7 +73,7 @@ export default function Favoritos() {
         <>
           
           <div className="section-title">
-            <h2>⭐ Meus Jogos Favoritos ( {favoritos.length} )</h2>
+            <h2>⭐ Meus Jogos Favoritos </h2>
             
           </div>
 

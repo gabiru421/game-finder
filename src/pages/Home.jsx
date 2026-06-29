@@ -89,7 +89,7 @@ export default function Home() {
 
       
       <header className="header">
-        <Link to="/Home" className="logo">
+        <Link to="/" className="logo">
            Game Finder
         </Link>
 
@@ -132,7 +132,7 @@ export default function Home() {
       
       {erro && <div className="erro">{erro}</div>}
 
-      {/* LOADING */}
+      
       {loading && (
         <div className="grid">
           {[1,2,3,4,5,6].map(i => (
@@ -153,7 +153,6 @@ export default function Home() {
             {jogosFiltrados.map(jogo => (
               <div key={jogo.id} className="card">
 
-                {/* FAVORITO RESTAURADO */}
                 <button
                   className={`favorite-btn ${isFavorito(jogo.id) ? "active" : ""}`}
                   onClick={() => toggleFavorito(jogo)}
