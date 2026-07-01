@@ -51,7 +51,7 @@ git clone https://github.com/gabiru421/game-finder.git
 
 2. Instalar dependências: npm install
 
-3. Rodar o projeto: npm run dev
+3. Rodar o projeto: npm run dev e apos npm run build
 
 Caso necessário crie o arquivo .env (coloque sua API KEY do site RAWG)
 VITE_RAWG_API_KEY=sua_api_aqui
